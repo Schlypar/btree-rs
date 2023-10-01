@@ -1,48 +1,44 @@
-use std::rc::Rc;
+use std::path::Path;
 
-use btree::{AlreadyPresent, BTree, Comparator};
+use lab::db::*;
+use lab::db::{goods::*, person::*};
+use lab::error::Error;
+use serde::{Deserialize, Serialize};
 
-fn main() -> Result<(), AlreadyPresent> {
-    let comp = Comparator::new(Rc::new(|a: &i32, b: &i32| a.cmp(b)));
+#[derive(Debug, Serialize, Deserialize)]
+struct Inter {
+    inter: i32,
+}
 
-    let mut btree: BTree<i32, &str> = match BTree::new(2, comp) {
-        Some(tree) => tree,
-        None => panic!(),
-    };
+#[derive(Debug)]
+struct Comparator {}
 
-    btree.insert((1, "first"))?;
+fn main() -> Result<(), Error> {
+    let path = Path::new("test");
+    // FileHandler::create_file(path)?;
+    let mut db = DataBase::new(path.into())?;
 
-    btree.insert((2, "second"))?;
+    // db = db.add_record(Crate::new(
+    //     Person::new("LAST".into(), "Rep1".into(), "Bat1".into(), 142000),
+    //     Person::new("Per2".into(), "Rep2".into(), "Bat2".into(), 142007),
+    //     "AVasdawdsad".into(),
+    //     "Bcadsadsa".into(),
+    //     1,
+    // ))?;
 
-    btree.insert((3, "third"))?;
+    // db = db.add_record(Crate::new(
+    //     Person::new("Per3".into(), "Rep3".into(), "Bat3".into(), 142000),
+    //     Person::new("Per4".into(), "Rep4".into(), "Bat4".into(), 142007),
+    //     "BBB".into(),
+    //     "AAA".into(),
+    //     1,
+    // ))?;
 
-    btree.insert((4, "fourth"))?;
-
-    btree.insert((5, "fifth"))?;
-
-    btree.insert((7, "sixth"))?;
-
-    btree.insert((8, "seventh"))?;
-
-    btree.insert((9, "eighth"))?;
-
-    btree.insert((-1, "minus first"))?;
-
-    btree.insert((-2, "minus second"))?;
-
-    btree.insert((-3, "minus third"))?;
-
-    btree.insert((-4, "minus fourth"))?;
-
-    btree.insert((-5, "-minus fifth"))?;
-
-    btree.insert((-7, "minus sixth"))?;
-
-    btree.insert((-8, "minus seventh"))?;
-
-    btree.insert((-9, "minus eighth"))?;
-
-    println!("{}", btree);
+    // db.test_output()?;
+    // println!("-----------------------");
+    // db.delete_record(0)?;
+    db.test_output()?;
+    // println!("-----------------------");
 
     Ok(())
 }
