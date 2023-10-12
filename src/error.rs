@@ -19,3 +19,9 @@ impl std::convert::From<std::io::Error> for Error {
         Error::UnexpectedError
     }
 }
+
+impl std::convert::From<eframe::Error> for Error {
+    fn from(_e: eframe::Error) -> Error {
+        Error::UnexpectedError
+    }
+}

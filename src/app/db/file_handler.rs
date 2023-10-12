@@ -1,17 +1,17 @@
-use std::{
-    fs::{self, File, OpenOptions},
+pub use std::{
+    fs::{self, File, OpenOptions, create_dir_all},
     io::{BufReader, Seek, SeekFrom},
     path::Path,
 };
 
-pub use crate::db::goods::Crate;
+pub use crate::app::db::goods::Crate;
 use bincode::{deserialize_from, serialize_into};
 pub use serde::{de::DeserializeOwned, Deserialize, Serialize};
 
 // pub const STRUCT_SIZE: usize = std::mem::size_of::<Crate>();
 pub const STRUCT_SIZE: usize = 216;
 
-use crate::error::Error;
+use crate::Error;
 
 #[derive(Debug)]
 enum FileState<R> {
@@ -25,6 +25,7 @@ pub struct FileHandler<'a> {
     state: FileState<File>,
 }
 
+#[allow(dead_code)]
 impl<'a> FileHandler<'a> {
     pub fn new(path: &'a Path) -> Self {
         FileHandler {

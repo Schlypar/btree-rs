@@ -4,7 +4,7 @@ mod node;
 use std::fmt::{Debug, Display};
 use std::marker::PhantomData;
 
-use crate::error::Error;
+use crate::Error;
 use key_value::KeyValue;
 use node::{Comparator, NodeType};
 use node::{Node, Split};
@@ -83,17 +83,20 @@ where
         }
     }
 
-    pub fn insert(mut self, key: K, value: V) -> Result<Self, Error> {
+    pub fn contains(&self, key: K) -> bool {
+        if self.root.is_none() {
+            return false;
+        }
+        self.search(key).is_ok()
+    }
+
+    pub fn insert(&mut self, key: K, value: V) -> Result<(), Error> {
         if self.root.is_none() {
             self.root = Some(Node::new(NodeType::Leaf(vec![(key, value).into()])));
-            return Ok(BTree {
-                root: self.root,
-                t: self.t,
-                cmp: PhantomData,
-            });
+            return Ok(());
         }
 
-        let mut root = self.root.unwrap();
+        let mut root = self.root.as_ref().unwrap().clone();
         self.root = None;
 
         let is_root_full = root.is_full(self.t)?;
@@ -107,11 +110,7 @@ where
             self.insert_recursive(&mut new_root, key, value)?;
             self.root = Some(new_root);
 
-            return Ok(BTree {
-                root: self.root,
-                t: self.t,
-                cmp: PhantomData,
-            });
+            return Ok(());
         }
 
         if let Some(split) = match root.node_type {
@@ -142,11 +141,8 @@ where
                     Err(index) => index,
                 };
                 pairs.insert(index, (key, value.clone()).into());
-                return Ok(BTree {
-                    root: Some(root),
-                    t: self.t,
-                    cmp: PhantomData,
-                });
+                self.root = Some(root);
+                return Ok(());
             }
             NodeType::Undefined => return Err(Error::UnexpectedError),
         } {
@@ -176,11 +172,8 @@ where
         }
 
         self.root = Some(root);
-        Ok(BTree {
-            root: self.root,
-            t: self.t,
-            cmp: PhantomData,
-        })
+
+        Ok(())
     }
 
     fn insert_recursive(

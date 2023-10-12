@@ -1,3 +1,4 @@
-pub mod btree;
+pub mod app;
 pub mod error;
-pub mod db;
+
+pub use error::Error;

@@ -1,10 +1,11 @@
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Deserialize, Serialize, PartialEq, Eq)]
+#[derive(Debug, Deserialize, Serialize, PartialEq, Eq, Clone)]
 pub struct Fixed {
     str: [char; 25],
 }
 
+#[allow(dead_code)]
 impl Fixed {
     pub fn new(str: [char; 25]) -> Self {
         Self { str }
@@ -44,5 +45,23 @@ impl std::convert::From<&str> for Fixed {
             result[i] = character;
         }
         Self { str: result }
+    }
+}
+
+impl std::fmt::Display for Fixed {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let len = self
+            .str
+            .iter()
+            .cloned()
+            .position(|ch| ch as u8 == b'\0')
+            .unwrap_or(25);
+
+        let mut string = String::with_capacity(len);
+
+        for i in 0..len {
+            string.push(self.str[i]);
+        }
+        write!(f, "{}", string)
     }
 }
