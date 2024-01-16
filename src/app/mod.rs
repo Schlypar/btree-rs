@@ -83,7 +83,6 @@ impl<'a> Application<'a> {
 impl<'a> App for Application<'a> {
     fn update(&mut self, ctx: &eframe::egui::Context, _frame: &mut eframe::Frame) {
         self.configure_font(ctx);
-
         self.top_panel(ctx);
         self.footer(ctx);
 
